@@ -1,16 +1,13 @@
 import java.util.List;
 
 public class Auction {
-    public Item item;
-    public List<RealBidder> realBidders;
-    public List<CommissionBidder> commissionBidders;
+    public List<Bidder> participatedBidders;
+    public Bidder winner;
+    public boolean didBidderPay;
 
-    public Auction(Item item, List<RealBidder> realBidders, List<CommissionBidder> commissionBidders) {
-        this.item = item;
-        this.realBidders = realBidders;
-        this.commissionBidders = commissionBidders;
+    public Auction(List<Bidder> participatedBidders, Bidder winner, boolean didBidderPay) {
+        this.participatedBidders = participatedBidders;
+        this.winner = winner;
+        this.didBidderPay = didBidderPay;
     }
-
-
-
 }

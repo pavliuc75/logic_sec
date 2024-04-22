@@ -25,13 +25,25 @@ public class Main {
         doBid(realBidder1, item);
         doBidOnBehalfOfCBidder(item, commissionBidders);
         endAuction(item);
+
+        List<Bidder> allBidders = new ArrayList<>();
+        allBidders.addAll(commissionBidders);
+        allBidders.addAll(realBidders);
+        Auction auction1 = new Auction(allBidders, realBidder1, true);
+
+        AuctionHouse auctionHouse1 = new AuctionHouse();
+        auctionHouse1.addAuction(auction1);
+
+        AuctionHouse auctionHouse2 = new AuctionHouse();
+        auctionHouse2.addAuction(new Auction(new ArrayList<>(), commissionBidder2, false));
+
+        auctionHouse1.shareOwnReputationOfBidders(auctionHouse2);
     }
 
     private static void endAuction(Item item) {
         System.out.println("---");
         System.out.println("Auction ends. " + item.currentBidder.name + " wins.");
         System.out.println("Final price: " + item.currentPrice + " Kr");
-
     }
 
     public static void doInitialBidOnBehalfOfCBidder(Item item, List<CommissionBidder> commissionBidders) {
