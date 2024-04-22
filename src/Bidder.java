@@ -1,9 +1,8 @@
 public abstract class Bidder {
-    public String name;
-    public int reputation; //0-10
+    public String uniqueNumber;
+    public String name; //{actionHouses: }
 
-    public Bidder(String name, int reputation) {
-        this.name = name;
-        this.reputation = reputation;
+    public Bidder(String uniqueNumber) {
+        this.uniqueNumber = uniqueNumber;
     }
 }

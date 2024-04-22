@@ -2,19 +2,24 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+//roles:
+//1. RealBidder
+//2. CommissionBidder
+//3. AuctionHouse
+
 public class Main {
     public static void main(String[] args) {
-        RealBidder realBidder1 = new RealBidder("C", 0);
-        List<RealBidder> realBidders = new ArrayList<>();
-        realBidders.add(realBidder1);
+        RealBidder realBidder1 = new RealBidder("C"); //{⊥}
+        List<RealBidder> realBidders = new ArrayList<>(); //{⊥} {size is also ⊥}
+        realBidders.add(realBidder1); //{⊥} -> {⊥}
 
-        CommissionBidder commissionBidder1 = new CommissionBidder("A", 0, 500);
-        CommissionBidder commissionBidder2 = new CommissionBidder("B", 0, 700);
-        List<CommissionBidder> commissionBidders = new ArrayList<>();
-        commissionBidders.add(commissionBidder1);
-        commissionBidders.add(commissionBidder2);
+        CommissionBidder commissionBidder1 = new CommissionBidder("A", 0, 500); // secr of AuctionHouse1
+        CommissionBidder commissionBidder2 = new CommissionBidder("B", 0, 700); // secr of AuctionHouse1
+        List<CommissionBidder> commissionBidders = new ArrayList<>(); // secr of AuctionHouse1, size is also secret
+        commissionBidders.add(commissionBidder1); //secr of AuctionHouse1  -> secr of AuctionHouse1
+        commissionBidders.add(commissionBidder2); //secr of AuctionHouse1  -> secr of AuctionHouse1
 
-        Item item = new Item(50, 50);
+        Item item = new Item(50, 50); //{⊥}
         System.out.println("Action starts. Item has initial price of " + item.startingPrice + " Kr");
 
         doInitialBidOnBehalfOfCBidder(item, commissionBidders);
@@ -46,26 +51,36 @@ public class Main {
         System.out.println("Final price: " + item.currentPrice + " Kr");
     }
 
+    // process called with authority of AuctionHouse1
     public static void doInitialBidOnBehalfOfCBidder(Item item, List<CommissionBidder> commissionBidders) {
-        if (commissionBidders.isEmpty()) return;
+        if (commissionBidders.isEmpty()) {
+            if (actsOfBehalfOf(AuctionHouse.class)) { //secr of AuctionHouse1 -> {⊥}
+                System.out.println("There are no commision bidders {⊥}");
+            }
 
-        commissionBidders.sort(Comparator.comparingInt(o -> o.highest));
+            return;
+        };
 
-        CommissionBidder cBidderWithHighest = commissionBidders.get(commissionBidders.size() - 1);
-        CommissionBidder cBidderWithSecondHighest = commissionBidders.get(commissionBidders.size() - 2);
+        commissionBidders.sort(Comparator.comparingInt(o -> o.highest)); //secr of AuctionHouse1 -> secr of AuctionHouse1
 
-        item.currentPrice = Math.min(cBidderWithSecondHighest.highest + item.step, cBidderWithHighest.highest);
-        item.currentBidder = cBidderWithHighest;
+        CommissionBidder cBidderWithHighest = commissionBidders.get(commissionBidders.size() - 1); //secr of AuctionHouse1 -> secr of AuctionHouse1
+        CommissionBidder cBidderWithSecondHighest = commissionBidders.get(commissionBidders.size() - 2); //secr of AuctionHouse1 -> secr of AuctionHouse1
 
-        cBidderWithHighest.declassifyBidderName();
-        System.out.println("action house bids for " + item.currentBidder.name + ": " + item.currentPrice + " Kr");
+        item.currentPrice = Math.min(cBidderWithSecondHighest.highest + item.step, cBidderWithHighest.highest); //secr of AuctionHouse1 -> {⊥}
+
+        if (actsOfBehalfOf(AuctionHouse.class)) { //secr of CommisionBidder1 -> {⊥}
+            cBidderWithHighest.declassifyBidderName(); //secr of CommisionBidder1 -> {⊥}
+            item.uniqueNumberOfCurrentBidder = cBidderWithHighest.uniqueNumber; //{⊥} -> {⊥}
+
+            System.out.println("action house bids for " + item.uniqueNumberOfCurrentBidder + ": " + item.currentPrice + " Kr");
+        }
     }
 
     public static void doBid(RealBidder realBidder, Item item) {
         item.currentPrice += item.step;
         item.currentBidder = realBidder;
 
-        System.out.println(realBidder.name + " bids " + item.currentPrice + " Kr");
+        System.out.println(realBidder.uniqueNumber + " bids " + item.currentPrice + " Kr");
     }
 
     public static void doBidOnBehalfOfCBidder(Item item, List<CommissionBidder> commissionBidders) {
@@ -83,5 +98,10 @@ public class Main {
         } else {
             cBidderWithHighest.declassifyHighest();
         }
+    }
+
+
+    private static boolean actsOfBehalfOf(Class<AuctionHouse> auctionHouseClass) {
+        return true;
     }
 }

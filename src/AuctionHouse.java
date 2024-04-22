@@ -6,19 +6,19 @@ public class AuctionHouse {
     public void addAuction(Auction auction) {
         Bidder winner = auction.winner;
 
-        boolean isWinnerInHM = reputationsOfBidders.containsKey(winner.name);
+        boolean isWinnerInHM = reputationsOfBidders.containsKey(winner.uniqueNumber);
 
         if (auction.didBidderPay) {
             if (isWinnerInHM) {
-                reputationsOfBidders.put(winner.name, reputationsOfBidders.get(winner.name) + 1);
+                reputationsOfBidders.put(winner.uniqueNumber, reputationsOfBidders.get(winner.uniqueNumber) + 1);
             } else {
-                reputationsOfBidders.put(winner.name, 1);
+                reputationsOfBidders.put(winner.uniqueNumber, 1);
             }
         } else {
             if (isWinnerInHM) {
-                reputationsOfBidders.put(winner.name, reputationsOfBidders.get(winner.name) - 1);
+                reputationsOfBidders.put(winner.uniqueNumber, reputationsOfBidders.get(winner.uniqueNumber) - 1);
             } else {
-                reputationsOfBidders.put(winner.name, -1);
+                reputationsOfBidders.put(winner.uniqueNumber, -1);
             }
         }
     }

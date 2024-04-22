@@ -1,7 +1,6 @@
 public class RealBidder extends Bidder {
-    public RealBidder(String name, int reputation) {
+    public RealBidder(String name) {
         // String name {⊥}
-        // int reputation {actions: actions}
-        super(name, reputation);
+        super(name);
     }
 }
