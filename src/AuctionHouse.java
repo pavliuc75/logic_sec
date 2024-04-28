@@ -1,34 +1,54 @@
+import util.Util;
+
 import java.util.HashMap;
 
 public class AuctionHouse {
-    public HashMap<String, Integer> reputationsOfBidders = new HashMap<>(); //{thisAuctionHouse: thisAuctionHouse}
+    public HashMap<String, Integer> reputationsOfBiddersDb = new HashMap<>(); //{thisAuctionHouse: thisAuctionHouse}
+
+    public HashMap<String, Integer> newlyReceivedReputationsOfBidders = new HashMap<>(); //{⊥}
 
     public void addAuction(Auction auction) {
         Bidder winner = auction.winner;
 
-        boolean isWinnerInHM = reputationsOfBidders.containsKey(winner.uniqueNumber);
+        boolean isWinnerInHM = reputationsOfBiddersDb.containsKey(winner.uniqueNumber);
 
         if (auction.didBidderPay) {
             if (isWinnerInHM) {
-                reputationsOfBidders.put(winner.uniqueNumber, reputationsOfBidders.get(winner.uniqueNumber) + 1);
+                reputationsOfBiddersDb.put(winner.uniqueNumber, reputationsOfBiddersDb.get(winner.uniqueNumber) + 1);
             } else {
-                reputationsOfBidders.put(winner.uniqueNumber, 1);
+                reputationsOfBiddersDb.put(winner.uniqueNumber, 1);
             }
         } else {
             if (isWinnerInHM) {
-                reputationsOfBidders.put(winner.uniqueNumber, reputationsOfBidders.get(winner.uniqueNumber) - 1);
+                reputationsOfBiddersDb.put(winner.uniqueNumber, reputationsOfBiddersDb.get(winner.uniqueNumber) - 1);
             } else {
-                reputationsOfBidders.put(winner.uniqueNumber, -1);
+                reputationsOfBiddersDb.put(winner.uniqueNumber, -1);
             }
         }
     }
 
-    public void shareOwnReputationOfBidders(AuctionHouse targetAuctionHouse) {
-        targetAuctionHouse.reputationsOfBidders.forEach((key, value) -> {
-            if (reputationsOfBidders.containsKey(key)) {
-                reputationsOfBidders.put(key, reputationsOfBidders.get(key) + value);
+    //todo should it go thru public stage?
+    public void shareReputationAboutBidders(AuctionHouse targetAuctionHouse) {
+        HashMap<String, Integer> toBeShared = new HashMap<>(); //{⊥}
+
+        toBeShared = reputationsOfBiddersDb; //{⊥} -> {thisAuctionHouse: thisAuctionHouse}
+        //{thisAuctionHouse: thisAuctionHouse} is the new label of toBeShared
+
+        if (Util.actsFor("shareReputationAboutBidders", "thisAuctionHouse")) {
+            Util.declassify(toBeShared); // {thisAuctionHouse: thisAuctionHouse} -> {⊥}
+            //{⊥} is the new label of toBeShared
+
+            targetAuctionHouse.newlyReceivedReputationsOfBidders = toBeShared; //{⊥} -> {⊥}
+            //newlyReceivedReputationsOfBidders is a temporary variable (just so it works)
+        }
+    }
+
+    public void updateReputationsOfBidders() {
+        reputationsOfBiddersDb.forEach((key, value) -> {
+            if (newlyReceivedReputationsOfBidders.containsKey(key)) {
+                reputationsOfBiddersDb.put(key, reputationsOfBiddersDb.get(key) + newlyReceivedReputationsOfBidders.get(key));
             } else {
-                reputationsOfBidders.put(key, value);
+                reputationsOfBiddersDb.put(key, value);
             }
         });
     }
