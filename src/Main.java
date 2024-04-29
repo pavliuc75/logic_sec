@@ -43,6 +43,7 @@ public class Main {
         auctionHouse2.addAuction(new Auction(new ArrayList<>(), commissionBidder2, false));
 
         auctionHouse1.shareReputationAboutBidders(auctionHouse2);
+        auctionHouse2.updateReputationsOfBidders();
     }
 
     private static void endAuction(Item item) {

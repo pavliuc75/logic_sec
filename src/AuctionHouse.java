@@ -27,7 +27,6 @@ public class AuctionHouse {
         }
     }
 
-    //todo should it go thru public stage?
     public void shareReputationAboutBidders(AuctionHouse targetAuctionHouse) {
         HashMap<String, Integer> toBeShared = new HashMap<>(); //{⊥}
 
@@ -35,21 +34,22 @@ public class AuctionHouse {
         //{thisAuctionHouse: thisAuctionHouse} is the new label of toBeShared
 
         if (Util.actsFor("shareReputationAboutBidders", "thisAuctionHouse")) {
-            Util.declassify(toBeShared); // {thisAuctionHouse: thisAuctionHouse} -> {⊥}
-            //{⊥} is the new label of toBeShared
+            Util.declassify(toBeShared, "{theOtherAuctionHouse: theOtherAuctionHouse}");
+            //{theOtherAuctionHouse: theOtherAuctionHouse} is the new label of toBeShared
 
-            targetAuctionHouse.newlyReceivedReputationsOfBidders = toBeShared; //{⊥} -> {⊥}
+            targetAuctionHouse.newlyReceivedReputationsOfBidders = toBeShared;
             //newlyReceivedReputationsOfBidders is a temporary variable (just so it works)
         }
     }
 
+    // process called with authority of thisAuctionHouse (info does not flow outside the auction house)
     public void updateReputationsOfBidders() {
-        reputationsOfBiddersDb.forEach((key, value) -> {
-            if (newlyReceivedReputationsOfBidders.containsKey(key)) {
-                reputationsOfBiddersDb.put(key, reputationsOfBiddersDb.get(key) + newlyReceivedReputationsOfBidders.get(key));
-            } else {
-                reputationsOfBiddersDb.put(key, value);
-            }
-        });
+        reputationsOfBiddersDb.forEach((key, value) -> { //{thisAuctionHouse: thisAuctionHouse}
+            if (newlyReceivedReputationsOfBidders.containsKey(key)) { //{thisAuctionHouse: thisAuctionHouse}
+                reputationsOfBiddersDb.put(key, reputationsOfBiddersDb.get(key) + newlyReceivedReputationsOfBidders.get(key)); //{thisAuctionHouse: thisAuctionHouse}
+            } else { //{thisAuctionHouse: thisAuctionHouse}
+                reputationsOfBiddersDb.put(key, value); //{thisAuctionHouse: thisAuctionHouse}
+            } //{thisAuctionHouse: thisAuctionHouse}
+        }); //{thisAuctionHouse: thisAuctionHouse}
     }
 }
