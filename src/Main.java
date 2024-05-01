@@ -36,10 +36,10 @@ public class Main {
         allBidders.addAll(realBidders);
         Auction auction1 = new Auction(allBidders, realBidder1, true);
 
-        AuctionHouse auctionHouse1 = new AuctionHouse();
-        auctionHouse1.addAuction(auction1);
+        AuctionHouse auctionHouse1 = new AuctionHouse(); // {⊥} (existence of auction 1 house is public)
+        AuctionHouse auctionHouse2 = new AuctionHouse(); // {⊥} (existence of auction 2 house is public)
 
-        AuctionHouse auctionHouse2 = new AuctionHouse();
+        auctionHouse1.addAuction(auction1);
         auctionHouse2.addAuction(new Auction(new ArrayList<>(), commissionBidder2, false));
 
         auctionHouse1.shareReputationAboutBidders(auctionHouse2);

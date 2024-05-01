@@ -34,11 +34,11 @@ public class AuctionHouse {
         //{thisAuctionHouse: thisAuctionHouse} is the new label of toBeShared
 
         if (Util.actsFor("shareReputationAboutBidders", "thisAuctionHouse")) {
-            Util.declassify(toBeShared, "{theOtherAuctionHouse: theOtherAuctionHouse}");
-            //{theOtherAuctionHouse: theOtherAuctionHouse} is the new label of toBeShared
+            Util.declassify(toBeShared, "{⊥}");
+            //⊥ is the new label of toBeShared
 
             targetAuctionHouse.newlyReceivedReputationsOfBidders = toBeShared;
-            //newlyReceivedReputationsOfBidders is a temporary variable (just so it works)
+            //⊥ -> {theOtherAuctionHouse: theOtherAuctionHouse}
         }
     }
 
