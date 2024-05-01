@@ -1,4 +1,7 @@
+import util.Channel;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -42,7 +45,7 @@ public class Main {
         auctionHouse1.addAuction(auction1);
         auctionHouse2.addAuction(new Auction(new ArrayList<>(), commissionBidder2, false));
 
-        auctionHouse1.shareReputationAboutBidders(auctionHouse2);
+        auctionHouse1.shareBidderReputations(auctionHouse2);
         auctionHouse2.updateReputationsOfBidders();
     }
 
@@ -60,7 +63,8 @@ public class Main {
             }
 
             return;
-        };
+        }
+        ;
 
         commissionBidders.sort(Comparator.comparingInt(o -> o.highest)); //secr of AuctionHouse1 -> secr of AuctionHouse1
 
@@ -71,7 +75,7 @@ public class Main {
 
         if (actsOfBehalfOf(AuctionHouse.class)) { //secr of CommisionBidder1 -> {⊥}
             cBidderWithHighest.declassifyBidderName(); //secr of CommisionBidder1 -> {⊥}
-            item.uniqueNumberOfCurrentBidder = cBidderWithHighest.uniqueNumber; //{⊥} -> {⊥}
+            item.uniqueNumberOfCurrentBidder = cBidderWithHighest.number; //{⊥} -> {⊥}
 
             System.out.println("action house bids for " + item.uniqueNumberOfCurrentBidder + ": " + item.currentPrice + " Kr");
         }
@@ -81,7 +85,7 @@ public class Main {
         item.currentPrice += item.step;
         item.currentBidder = realBidder;
 
-        System.out.println(realBidder.uniqueNumber + " bids " + item.currentPrice + " Kr");
+        System.out.println(realBidder.number + " bids " + item.currentPrice + " Kr");
     }
 
     public static void doBidOnBehalfOfCBidder(Item item, List<CommissionBidder> commissionBidders) {
@@ -104,5 +108,18 @@ public class Main {
 
     private static boolean actsOfBehalfOf(Class<AuctionHouse> auctionHouseClass) {
         return true;
+    }
+
+    public void communicateAuctionResults(Auction auction) {
+        Bidder winner = auction.item.currentBidder; // {⊥}
+
+        String finalPrice = auction.item.currentPrice + ""; // {⊥}
+        String bidderNumber = winner.number + ""; // {⊥}
+        String bidderName = winner.name; // {auctionHouse: auctionHouse, bidder}
+
+        new ArrayList<>(Arrays.asList(finalPrice, bidderNumber, bidderName)).forEach(info -> Channel.write("publicChannel", info));
+        //the last element will not be written to the channel, (will act as a filter)
+        //on the other hand
+        Channel.write("winnerBidderChannel", bidderName); //would work, since he is reader
     }
 }

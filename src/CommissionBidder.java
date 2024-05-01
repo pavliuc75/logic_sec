@@ -9,7 +9,7 @@ public class CommissionBidder extends Bidder {
     }
 
     public void declassifyBidderName() {
-        System.out.println("Declassifying " + uniqueNumber);
+        System.out.println("Declassifying " + number);
     }
 
     public void declassifyHighest() {
