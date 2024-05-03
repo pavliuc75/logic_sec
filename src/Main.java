@@ -46,7 +46,7 @@ public class Main {
         auctionHouse2.addAuction(new Auction(new ArrayList<>(), commissionBidder2, false));
 
         auctionHouse1.shareBidderReputations(auctionHouse2);
-        auctionHouse2.updateReputationsOfBidders();
+        auctionHouse2.updateReputationsFromNewlyReceivedInfo();
     }
 
     private static void endAuction(Item item) {
@@ -117,7 +117,11 @@ public class Main {
         String bidderNumber = winner.number + ""; // {⊥}
         String bidderName = winner.name; // {auctionHouse: auctionHouse, bidder}
 
-        new ArrayList<>(Arrays.asList(finalPrice, bidderNumber, bidderName)).forEach(info -> Channel.write("publicChannel", info));
+        new ArrayList<>(Arrays.asList(finalPrice, bidderNumber, bidderName))
+                .forEach(info -> {
+                    Channel.write("publicChannel", info);
+                    Channel.write("winnerBidderChannel", info);
+                });
         //the last element will not be written to the channel, (will act as a filter)
         //on the other hand
         Channel.write("winnerBidderChannel", bidderName); //would work, since he is reader

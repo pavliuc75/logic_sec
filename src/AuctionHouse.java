@@ -1,12 +1,11 @@
 import util.Util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class AuctionHouse {
-    public List<BidderReputation> biddersReputations; //{thisAuctionHouse: thisAuctionHouse}
+    public List<BidderReputation> biddersReputations;              //{thisAuctionHouse: thisAuctionHouse}
     public List<Map.Entry<String, Integer>> tempBidderReputations; //{thisAuctionHouse: thisAuctionHouse}
 
 
@@ -40,7 +39,7 @@ public class AuctionHouse {
             //when this happens. first, the other action house applies 1.restriction (adds: {theOtherActionHouse: })
             //2. declassification, by adding himself as owner (mby add that not sure mby this is just how it works.)
         } else {
-            System.out.println("Procedure needs to be called with authority of thisAuctionHouse.");
+            throw new RuntimeException("Procedure needs to be called with authority of thisAuctionHouse.");
         }
     }
 
@@ -85,16 +84,24 @@ public class AuctionHouse {
         targetAuctionHouse.tempBidderReputations = reputationsToBeShared; //reputationsToBeShared <= targetAuctionHouse.tempBidderReputations (variable assignment statement)
     }
 
-    // process called with authority of thisAuctionHouse (info does not flow outside the auction house)
-    //TODO explaion here how supremum results in same labe lo procedure is not leaking anything. no declasification needed
-    public void updateReputationsOfBidders() {
-        biddersReputations.forEach((bidderReputation) -> { //{thisAuctionHouse: thisAuctionHouse}
-            tempBidderReputations.forEach((tempBidderReputation) -> { //{thisAuctionHouse: thisAuctionHouse}
-                if (bidderReputation.name.equals(tempBidderReputation.getKey())) { //{thisAuctionHouse: thisAuctionHouse}
-                    bidderReputation.reputation += tempBidderReputation.getValue(); //{thisAuctionHouse: thisAuctionHouse}
-                } //{thisAuctionHouse: thisAuctionHouse}
-            }); //{thisAuctionHouse: thisAuctionHouse}
-        }); //{thisAuctionHouse: thisAuctionHouse}
+    public void shareBidderReputations___(AuctionHouse targetAuctionHouse) {
+        List<Map.Entry<String, Integer>> reputationsToBeShared = new ArrayList<>();
+
+        biddersReputations.forEach((bidderReputation) -> {
+            reputationsToBeShared.add(Map.entry(bidderReputation.name, bidderReputation.reputation));
+        });
+
+        targetAuctionHouse.tempBidderReputations = reputationsToBeShared;
     }
 
+    // process called with authority of thisAuctionHouse (info does not flow outside the auction house)
+    //TODO explaion here how supremum results in same labe lo procedure is not leaking anything. no declasification needed
+    public void updateReputationsFromNewlyReceivedInfo() {
+        biddersReputations.forEach((bidderReputation) -> {
+            tempBidderReputations.forEach((tempBidderReputation) -> {
+                if (bidderReputation.name.equals(tempBidderReputation.getKey())) {
+                    bidderReputation.reputation += tempBidderReputation.getValue();
+                }});});
+        tempBidderReputations.clear();
+    }
 }
